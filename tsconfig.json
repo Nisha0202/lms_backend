@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "es2016",
+    "module": "commonjs",             // Standard for Node.js
+    "rootDir": "./src",               // Where your .ts files live
+    "outDir": "./dist",               // Where compiled .js files go
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,                   // Enforce strong typing
+    "skipLibCheck": true,
+    
+    // This is vital for your custom express.d.ts file to work!
+    "typeRoots": ["./node_modules/@types", "./src/types"]
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}
