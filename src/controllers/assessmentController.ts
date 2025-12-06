@@ -101,3 +101,28 @@ export async function getMyGrades(req: Request, res: Response) {
     return res.status(500).json({ message: 'Server error' });
   }
 }
+
+// =======================
+// 5. Admin: Get All Submissions (The "Inbox")
+// =======================
+export async function getAdminSubmissions(req: Request, res: Response) {
+  try {
+    const { status } = req.query; // optional: ?status=pending
+
+    const filter: any = {};
+    if (status === 'pending') {
+      filter.grade = { $exists: false }; // Only show ungraded work
+    }
+
+    const submissions = await AssignmentSubmission.find(filter)
+      .populate('student', 'name email') // Show who sent it
+      .populate('lesson', 'title')       // Show which task it was
+      .sort({ createdAt: -1 })           // Newest first
+      .exec();
+
+    return res.json(submissions);
+  } catch (err) {
+    console.error('getAdminSubmissions error', err);
+    return res.status(500).json({ message: 'Server error' });
+  }
+}

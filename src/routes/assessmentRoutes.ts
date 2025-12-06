@@ -3,7 +3,7 @@ import {
   submitAssignment, 
   gradeAssignment, 
   recordQuizScore, 
-  getMyGrades 
+  getMyGrades, getAdminSubmissions
 } from '../controllers/assessmentController';
 import { protect, adminOnly } from '../middleware/authMiddleware';
 
@@ -16,5 +16,7 @@ router.get('/my-grades', protect, getMyGrades); // <--- This is how they see mar
 // Admin Routes
 router.post('/grade-assignment/:submissionId', protect, adminOnly, gradeAssignment);
 router.post('/record-quiz-score', protect, adminOnly, recordQuizScore);
+router.get('/admin/submissions', protect, adminOnly, getAdminSubmissions); // <--- NEW ROUTE
+// ...
 
 export default router;
