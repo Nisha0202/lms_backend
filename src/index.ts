@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { connectDB, seedAdmin } from './config/db';
 import authRoutes from '../src/routes/authRoutes';
+import courseRoutes from '../src/routes/courseRoutes';
 
 dotenv.config();
 
@@ -19,7 +20,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRoutes);
-
+app.use('/api/courses', courseRoutes);
 // Health
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
 
