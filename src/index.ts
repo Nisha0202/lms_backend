@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import { connectDB, seedAdmin } from './config/db';
 import authRoutes from '../src/routes/authRoutes';
 import courseRoutes from '../src/routes/courseRoutes';
-
+import enrollmentRoutes from './routes/enrollmentRoutes';
 dotenv.config();
 
 const app = express();
@@ -21,6 +21,9 @@ app.use(express.json());
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/courses', courseRoutes);
+
+app.use('/api/enrollments', enrollmentRoutes);
+
 // Health
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
 
