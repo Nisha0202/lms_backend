@@ -6,20 +6,23 @@ import mongoose from 'mongoose';
 // =======================
 // Create Course (Admin)
 // =======================
+
 export async function createCourse(req: Request, res: Response) {
   try {
-    const { title, description, price, category, tags, batches } = req.body;
+    // 1. Destructure 'thumbnail' from body
+    const { title, description, price, category, tags, batches, thumbnail } = req.body;
 
     if (!title || !category || price === undefined)
       return res.status(400).json({ message: 'title, category and price are required' });
 
     const course = await Course.create({
       title,
+      thumbnail, // <--- 2. Save it here
       description,
       price,
       category,
       tags: tags || [],
-      batches: batches || [], // Expects array of objects: { name, startDate, ... }
+      batches: batches || [],
       lessons: [],
       instructor: req.user?.id, 
     });
