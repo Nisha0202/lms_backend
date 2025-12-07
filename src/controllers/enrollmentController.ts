@@ -56,8 +56,70 @@ export async function enrollStudent(req: Request, res: Response) {
 }
 
 // =======================
-// Student Dashboard: My Courses
+// Admin: Get ALL Enrollments
 // =======================
+export async function getAllEnrollments(req: Request, res: Response) {
+  try {
+    // 1. Fetch all enrollments, populate student and course details
+    const enrollments = await Enrollment.find()
+      .populate('student', 'name email')
+      .populate('course', 'title batches') // We need batches to find the name
+      .sort({ createdAt: -1 })
+      .exec();
+
+    // 2. Format the data for the frontend
+    const formatted = enrollments.map((e) => {
+      const course = e.course as any;
+      const student = e.student as any;
+
+      // Find the specific batch name from the course's batch list
+      const batchDetails = course?.batches?.find(
+        (b: any) => b._id.toString() === e.batchId.toString()
+      );
+
+      return {
+        _id: e._id,
+        studentName: student?.name || 'Unknown User',
+        studentEmail: student?.email || 'No Email',
+        courseTitle: course?.title || 'Unknown Course',
+        batchName: batchDetails?.name || 'Unknown Batch', // <--- The magic lookup
+        enrolledAt: e.createdAt,
+      };
+    });
+
+    return res.json(formatted);
+  } catch (err) {
+    console.error('getAllEnrollments error', err);
+    return res.status(500).json({ message: 'Server error' });
+  }
+}
+
+
+// =======================
+// Admin: Get Dashboard Stats
+// =======================
+export async function getDashboardStats(req: Request, res: Response) {
+  try {
+    // 1. Count Total Courses
+    const totalCourses = await Course.countDocuments();
+
+    // 2. Count Unique Students (using distinct)
+    const uniqueStudents = (await Enrollment.distinct('student')).length;
+
+    // 3. Count Total Enrollments (Revenue proxy)
+    const totalEnrollments = await Enrollment.countDocuments();
+
+    return res.json({
+      totalCourses,
+      totalStudents: uniqueStudents,
+      totalEnrollments
+    });
+  } catch (err) {
+    console.error('getDashboardStats error', err);
+    return res.status(500).json({ message: 'Server error' });
+  }
+}
+
 // =======================
 // Student Dashboard: My Courses
 // =======================
