@@ -159,3 +159,46 @@ export async function getCourseById(req: Request, res: Response) {
     return res.status(500).json({ message: 'Server error' });
   }
 }
+
+
+
+export async function updateCourse(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ message: "Invalid course id" });
+
+    const allowed = ["title","description","price","category","thumbnail","tags","batches"];
+    const updateData: any = {};
+    for (const key of allowed) {
+      if (req.body[key] !== undefined) updateData[key] = req.body[key];
+    }
+
+    // Ensure batches (if passed) are in expected shape
+    if (updateData.batches && !Array.isArray(updateData.batches)) {
+      return res.status(400).json({ message: "batches should be an array" });
+    }
+
+    const updated = await Course.findByIdAndUpdate(id, updateData, { new: true }).exec();
+    if (!updated) return res.status(404).json({ message: "Course not found" });
+    return res.json(updated);
+  } catch (err) {
+    console.error("updateCourse error", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+}
+
+export async function deleteCourse(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ message: "Invalid course id" });
+
+    const deleted = await Course.findByIdAndDelete(id).exec();
+    if (!deleted) return res.status(404).json({ message: "Course not found" });
+
+    // Optional: cascade cleanup (lessons, enrollments) - implement if you want
+    return res.json({ message: "Course deleted" });
+  } catch (err) {
+    console.error("deleteCourse error", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+}

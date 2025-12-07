@@ -5,6 +5,8 @@ import {
   addBatchToCourse, // <--- Import this
   getCourses,
   getCourseById,
+  updateCourse,
+  deleteCourse,
 } from '../controllers/courseController';
 import { protect, adminOnly } from '../middleware/authMiddleware';
 
@@ -18,5 +20,10 @@ router.post('/:courseId/batches', protect, adminOnly, addBatchToCourse); // <---
 // Public Routes
 router.get('/', getCourses);
 router.get('/:id', getCourseById);
+
+// Admin routes - protect and adminOnly middleware applied
+router.put("/:id", protect, adminOnly, updateCourse);
+router.delete("/:id", protect, adminOnly, deleteCourse);
+
 
 export default router;
