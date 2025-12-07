@@ -122,6 +122,7 @@ export async function getCourses(req: Request, res: Response) {
     if (tags) filter.tags = { $in: tags.split(',') };
 
     const courses = await Course.find(filter)
+      .populate('lessons')
       .select('-lessons -batches') // Keep list view lightweight
       .populate('instructor', 'name email') // Show instructor name, not just ID
       .sort(sortParam) // <--- APPLIED SORT HERE
