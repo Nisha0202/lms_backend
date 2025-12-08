@@ -1,9 +1,8 @@
-
 import mongoose, { Schema, Document, Types } from 'mongoose';
 export interface IEnrollment extends Document {
   student: Types.ObjectId;
   course: Types.ObjectId;
-  batchId: Types.ObjectId; // Ref to Course.batches._id
+  batchId: Types.ObjectId; 
   completedLessons: Types.ObjectId[];
   progress: number;
   paymentStatus: 'pending' | 'completed';
@@ -15,7 +14,7 @@ const EnrollmentSchema: Schema<IEnrollment> = new Schema(
   {
     student: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     course: { type: Schema.Types.ObjectId, ref: 'Course', required: true },
-    batchId: { type: Schema.Types.ObjectId, required: true }, // points to Course.batches._id
+    batchId: { type: Schema.Types.ObjectId, required: true }, 
     completedLessons: [{ type: Schema.Types.ObjectId, ref: 'Lesson' }],
     progress: { type: Number, default: 0 },
     paymentStatus: { type: String, enum: ['pending', 'completed'], default: 'pending' },

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import mongoose from 'mongoose';
-import { Enrollment, IEnrollment } from '../models/Enrollment';
-import { Course, ICourse, IBatch } from '../models/Course';
+import { Enrollment } from '../models/Enrollment';
+import { Course } from '../models/Course';
 
 // =======================
 // Enroll Student to Course
@@ -131,7 +131,7 @@ export async function getMyCourses(req: Request, res: Response) {
     const enrollments = await Enrollment.find({ student: studentId })
       .populate({
         path: 'course',
-        select: 'title description price category tags batches', // <--- Request 'batches' so we can find the name
+        select: 'title description thumbnail price category tags batches', // <--- Request 'batches' so we can find the name
       })
       .exec();
 
@@ -151,6 +151,7 @@ export async function getMyCourses(req: Request, res: Response) {
           title: course.title,
           description: course.description,
           category: course.category,
+          thumbnail: course.thumbnail, 
           price: course.price,
           // Don't send the whole batch list to frontend, just the info we need
         },
