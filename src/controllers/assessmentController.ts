@@ -52,27 +52,40 @@ export async function gradeAssignment(req: Request, res: Response) {
   }
 }
 
+
+
 // =======================
-// 3. Admin: Record Quiz Score (Manual Entry)
+// Admin: Get All Quizzes (Inbox Style)
 // =======================
-export async function recordQuizScore(req: Request, res: Response) {
+export async function getAdminQuizzes(req: Request, res: Response) {
   try {
-    const { studentId, lessonId, score } = req.body;
+    const quizzes = await QuizResult.find()
+      .populate('student', 'name email')
+      .populate('lesson', 'title')
+      .sort({ createdAt: -1 }) // Newest first
+      .exec();
 
-    if (!studentId || !lessonId || score === undefined) {
-      return res.status(400).json({ message: 'Missing fields' });
-    }
+    return res.json(quizzes);
+  } catch (err) {
+    return res.status(500).json({ message: 'Server error' });
+  }
+}
 
-    // Update existing or create new result
-    const result = await QuizResult.findOneAndUpdate(
-      { student: studentId, lesson: lessonId },
-      { score },
-      { new: true, upsert: true, setDefaultsOnInsert: true }
+// =======================
+// Admin: Grade Quiz (Updates the pending record)
+// =======================
+export async function updateQuizScore(req: Request, res: Response) {
+  try {
+    const { resultId, score, feedback } = req.body;
+
+    const result = await QuizResult.findByIdAndUpdate(
+      resultId,
+      { score, feedback },
+      { new: true }
     );
 
     return res.json(result);
   } catch (err) {
-    console.error('recordQuizScore error', err);
     return res.status(500).json({ message: 'Server error' });
   }
 }
