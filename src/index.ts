@@ -7,6 +7,8 @@ import courseRoutes from '../src/routes/courseRoutes';
 import enrollmentRoutes from './routes/enrollmentRoutes';
 import learningRoutes from './routes/learningRoutes';
 import assessmentRoutes from './routes/assessmentRoutes';
+import paymentRoutes from './routes/paymentRoutes';
+
 dotenv.config();
 
 const app = express();
@@ -27,6 +29,7 @@ app.use('/api/courses', courseRoutes);
 app.use('/api/enrollments', enrollmentRoutes);
 app.use('/api/learn', learningRoutes);
 app.use('/api/assessments', assessmentRoutes);
+app.use('/api/payment', paymentRoutes);
 
 // Health
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
