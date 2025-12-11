@@ -112,35 +112,28 @@ export async function updateQuizScore(req: Request, res: Response) {
 export async function getMyGrades(req: Request, res: Response) {
   try {
     const studentId = req.user?.id;
-    console.log("👉 Debug: User requesting grades:", studentId);
-
     if (!studentId) return res.status(401).json({ message: 'Unauthorized' });
 
-    // 1. Fetch RAW assignments (No populate yet) to see if they exist
-    const rawAssignments = await AssignmentSubmission.find({ student: studentId });
-    console.log(`👉 Debug: Found ${rawAssignments.length} raw assignments`);
-
-    // 2. Fetch with Populate
+    // 1. Fetch Assignments
     const assignments = await AssignmentSubmission.find({ student: studentId })
-      .populate('lesson', 'title')
-      .exec();
-    
-    // 3. Fetch with Populate
+      .populate('lesson', 'title') // Ensure Lesson model has 'title'
+      .sort({ createdAt: -1 });
+
+    // 2. Fetch Quizzes
     const quizzes = await QuizResult.find({ student: studentId })
       .populate('lesson', 'title')
-      .exec();
+      .sort({ createdAt: -1 });
 
-    console.log("👉 Debug: Sending payload:", { 
-      assignments: assignments.length, 
-      quizzes: quizzes.length 
-    });
+    // DEBUG: Log what we found to the terminal
+    console.log(`Found ${assignments.length} assignments and ${quizzes.length} quizzes`);
 
     return res.json({ assignments, quizzes });
-  } catch (err: any) {
-    console.error('❌ getMyGrades error', err);
+  } catch (err) {
+    console.error('getMyGrades error', err);
     return res.status(500).json({ message: 'Server error' });
   }
 }
+
 
 // =======================
 // 5. Admin: Get All Submissions (The "Inbox")
