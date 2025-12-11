@@ -3,8 +3,8 @@ import mongoose, { Schema, Document, Types } from 'mongoose';
 export interface IQuizResult extends Document {
   student: Types.ObjectId;
   lesson: Types.ObjectId;
-  score?: number; // <--- Optional now (undefined = pending)
-  feedback?: string; // <--- Added to match assignment logic
+  score?: number; 
+  feedback?: string; 
   createdAt: Date;
   updatedAt: Date;
 }
@@ -13,7 +13,7 @@ const QuizResultSchema: Schema<IQuizResult> = new Schema(
   {
     student: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     lesson: { type: Schema.Types.ObjectId, ref: 'Lesson', required: true },
-    score: { type: Number, min: 0, max: 100 }, // Removed required: true
+    score: { type: Number, min: 0, max: 100 }, 
     feedback: { type: String },
   },
   { timestamps: true }

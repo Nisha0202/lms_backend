@@ -7,6 +7,7 @@ import { Lesson } from '../models/Lesson';
 // =======================
 // 1. Student: Submit Assignment (Drive Link)
 // =======================
+
 export async function submitAssignment(req: Request, res: Response) {
   try {
     const studentId = req.user?.id;
@@ -15,14 +16,29 @@ export async function submitAssignment(req: Request, res: Response) {
     if (!studentId) return res.status(401).json({ message: 'Unauthorized' });
     if (!lessonId || !driveLink) return res.status(400).json({ message: 'Missing fields' });
 
-    // Update existing or create new submission (Upsert)
-    const submission = await AssignmentSubmission.findOneAndUpdate(
-      { student: studentId, lesson: lessonId },
-      { driveLink, grade: undefined, feedback: undefined }, // Reset grade if re-submitting
-      { new: true, upsert: true, setDefaultsOnInsert: true }
-    );
+    // 1. CHECK FIRST: Does a submission already exist?
+    const existing = await AssignmentSubmission.findOne({ 
+      student: studentId, 
+      lesson: lessonId 
+    });
 
-    return res.status(200).json(submission);
+    if (existing) {
+      // 2. BLOCK IT: Return an error if they try again
+      return res.status(400).json({ 
+        message: 'You have already submitted this assignment. Resubmissions are not allowed.' 
+      });
+    }
+
+    // 3. CREATE NEW: Only if it doesn't exist
+    const submission = await AssignmentSubmission.create({
+      student: studentId,
+      lesson: lessonId,
+      driveLink,
+      // grade & feedback are undefined by default
+    });
+
+    return res.status(201).json(submission);
+
   } catch (err) {
     console.error('submitAssignment error', err);
     return res.status(500).json({ message: 'Server error' });
@@ -96,21 +112,32 @@ export async function updateQuizScore(req: Request, res: Response) {
 export async function getMyGrades(req: Request, res: Response) {
   try {
     const studentId = req.user?.id;
+    console.log("👉 Debug: User requesting grades:", studentId);
+
     if (!studentId) return res.status(401).json({ message: 'Unauthorized' });
 
-    // Fetch Assignments
+    // 1. Fetch RAW assignments (No populate yet) to see if they exist
+    const rawAssignments = await AssignmentSubmission.find({ student: studentId });
+    console.log(`👉 Debug: Found ${rawAssignments.length} raw assignments`);
+
+    // 2. Fetch with Populate
     const assignments = await AssignmentSubmission.find({ student: studentId })
       .populate('lesson', 'title')
       .exec();
-
-    // Fetch Quizzes
+    
+    // 3. Fetch with Populate
     const quizzes = await QuizResult.find({ student: studentId })
       .populate('lesson', 'title')
       .exec();
 
+    console.log("👉 Debug: Sending payload:", { 
+      assignments: assignments.length, 
+      quizzes: quizzes.length 
+    });
+
     return res.json({ assignments, quizzes });
-  } catch (err) {
-    console.error('getMyGrades error', err);
+  } catch (err: any) {
+    console.error('❌ getMyGrades error', err);
     return res.status(500).json({ message: 'Server error' });
   }
 }

@@ -17,7 +17,7 @@ export async function createCourse(req: Request, res: Response) {
 
     const course = await Course.create({
       title,
-      thumbnail, // <--- 2. Save it here
+      thumbnail, 
       description,
       price,
       category,

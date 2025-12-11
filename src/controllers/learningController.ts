@@ -42,45 +42,7 @@ export async function getCourseContent(req: Request, res: Response) {
   }
 }
 
-// =======================
-// Mark Lesson Complete
-// =======================
-// export async function markLessonComplete(req: Request, res: Response) {
-//   try {
-//     const studentId = req.user?.id;
-//     const { courseId, lessonId } = req.body as { courseId: string; lessonId: string };
 
-//     if (!studentId) return res.status(401).json({ message: 'Unauthorized' });
-//     if (!mongoose.Types.ObjectId.isValid(courseId) || !mongoose.Types.ObjectId.isValid(lessonId))
-//       return res.status(400).json({ message: 'Invalid courseId or lessonId' });
-
-//     const enrollment: IEnrollment | null = await Enrollment.findOne({
-//       student: studentId,
-//       course: courseId,
-//     });
-
-//     if (!enrollment) return res.status(403).json({ message: 'Not enrolled in this course' });
-
-//     // Add lesson if not already completed
-//     if (!enrollment.completedLessons.some((l) => l.toString() === lessonId)) {
-//       enrollment.completedLessons.push(new mongoose.Types.ObjectId(lessonId));
-
-//       // Recalculate progress
-//       const course: ICourse | null = await Course.findById(courseId);
-//       const totalLessons = course?.lessons.length || 0;
-//       enrollment.progress = totalLessons
-//         ? (enrollment.completedLessons.length / totalLessons) * 100
-//         : 0;
-
-//       await enrollment.save();
-//     }
-
-//     return res.json({ message: 'Lesson marked complete', progress: enrollment.progress });
-//   } catch (err) {
-//     console.error('markLessonComplete error', err);
-//     return res.status(500).json({ message: 'Server error' });
-//   }
-// }
 
 
 export async function markLessonComplete(req: Request, res: Response) {
