@@ -203,3 +203,35 @@ export async function deleteCourse(req: Request, res: Response) {
     return res.status(500).json({ message: "Server error" });
   }
 }
+
+
+export async function deleteLessonFromCourse(req: Request, res: Response) {
+  try {
+    const { courseId, lessonId } = req.params;
+
+    // 1. Validate IDs
+    if (!mongoose.Types.ObjectId.isValid(courseId) || !mongoose.Types.ObjectId.isValid(lessonId)) {
+      return res.status(400).json({ message: 'Invalid IDs' });
+    }
+
+    // 2. Remove the Lesson ID from the Course's "lessons" array
+    const updatedCourse = await Course.findByIdAndUpdate(
+      courseId,
+      { $pull: { lessons: lessonId } }, // $pull removes the specific ID from the array
+      { new: true }
+    );
+
+    if (!updatedCourse) {
+      return res.status(404).json({ message: 'Course not found' });
+    }
+
+    // 3. Delete the actual Lesson Document
+    await Lesson.findByIdAndDelete(lessonId);
+
+    return res.json({ message: 'Lesson deleted successfully', course: updatedCourse });
+
+  } catch (err) {
+    console.error('deleteLessonFromCourse error', err);
+    return res.status(500).json({ message: 'Server error' });
+  }
+}
