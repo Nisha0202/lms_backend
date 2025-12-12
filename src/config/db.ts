@@ -38,7 +38,7 @@ export async function seedAdmin() {
     const existing = await UserModel.findOne({ email: ADMIN_EMAIL }).exec();
 
     if (existing) {
-      console.log('Admin already exists:', ADMIN_EMAIL);
+      // console.log('Admin already exists:', ADMIN_EMAIL);
       return;
     }
 

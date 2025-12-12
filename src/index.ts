@@ -13,9 +13,11 @@ dotenv.config();
 
 const app = express();
 
-// CORS — allow your Next.js frontend
 app.use(cors({
-  origin: process.env.FRONTEND_ORIGIN || 'http://localhost:3000',
+  origin: [
+    "http://localhost:3000",                // 1. Always allow Localhost
+    process.env.FRONTEND_ORIGIN || ""       // 2. Allow Vercel (if set)
+  ],
   credentials: true,
 }));
 

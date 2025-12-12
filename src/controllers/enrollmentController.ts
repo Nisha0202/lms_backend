@@ -33,7 +33,17 @@ export async function enrollStudent(req: Request, res: Response) {
     if (enrolledCount >= batch.seatLimit) {
       return res.status(400).json({ message: 'Batch is full' });
     }
+    
+    const now = new Date();
+    const batchEnd = new Date(batch.endDate);
+    
+    if (batchEnd < now) {
+       return res.status(400).json({ 
+         message: 'This batch has ended. Enrollment is closed.' 
+       });
+    }
 
+  
     // 3️⃣ Create Enrollment (paymentStatus: pending)
     const enrollment = await Enrollment.create({
       student: studentId,
@@ -131,7 +141,7 @@ export async function getMyCourses(req: Request, res: Response) {
     const enrollments = await Enrollment.find({ student: studentId })
       .populate({
         path: 'course',
-        select: 'title description thumbnail price category tags batches', // <--- Request 'batches' so we can find the name
+        select: 'title description thumbnail price category tags batches', 
       })
       .exec();
 
@@ -153,9 +163,9 @@ export async function getMyCourses(req: Request, res: Response) {
           category: course.category,
           thumbnail: course.thumbnail, 
           price: course.price,
-          // Don't send the whole batch list to frontend, just the info we need
+          
         },
-        batchName: batchDetails ? batchDetails.name : 'Unknown Batch', // <--- Critical UI fix
+        batchName: batchDetails ? batchDetails.name : 'Unknown Batch',
         startDate: batchDetails ? batchDetails.startDate : null,
         progress: e.progress,
         paymentStatus: e.paymentStatus,
