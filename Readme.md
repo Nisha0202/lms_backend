@@ -3,23 +3,31 @@
 
 A robust, scalable RESTful API powering the Learning Management System. Built with Node.js, Express, and MongoDB, featuring secure authentication, role-based access control, and Stripe payment integration.
 
+## Live Link
+https://coursemaster-backend-tau.vercel.app/api
+
 ## 🚀 Features
 
 -   **Authentication & Authorization**: Secure JWT-based auth with HttpOnly cookies.
 -   **Role-Based Access Control (RBAC)**: Distinct guards for `Student` and `Admin`.
+-   **User Administration**: Admin interface to search student accounts and manage access privileges (ban/restore functionality).
 -   **Course Management**: CRUD operations for courses, batches, and lessons.
 -   **Enrollment System**: Cohort-based enrollment logic with seat limits and date validation.
 -   **Payment Gateway**: Full Stripe integration (Checkout Sessions & Webhooks).
 -   **Assessment Engine**: Logic for submitting assignments and grading quizzes.
 -   **File Handling**: Secure integration for external resource links (Google Drive, YouTube).
 
+
 ## 🛠️ Tech Stack
 
 -   **Runtime**: Node.js
 -   **Framework**: Express.js
 -   **Database**: MongoDB (Mongoose ODM)
--   **Authentication**: JSON Web Tokens (JWT), Bcrypt
--   **Payments**: Stripe API
+-   **Authentication**: JSON Web Tokens (JWT) & Bcrypt
+-   **Payments**: Stripe API (Backend SDK)
+-   **Validation**: Mongoose Schema Validation
+-   **Environment**: Dotenv
+
 
 ## ⚙️ Environment Variables
 
