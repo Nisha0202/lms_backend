@@ -7,6 +7,7 @@ export interface IUser extends Document {
   role: 'student' | 'admin';
   createdAt: Date;
   updatedAt: Date;
+  isBanned: boolean;
 }
 
 const UserSchema: Schema<IUser> = new Schema(
@@ -15,6 +16,10 @@ const UserSchema: Schema<IUser> = new Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     role: { type: String, enum: ['student', 'admin'], default: 'student' },
+    isBanned: {
+    type: Boolean,
+    default: false
+  }
   },
   { timestamps: true }
 );

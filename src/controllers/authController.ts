@@ -61,6 +61,10 @@ export async function loginUser(req: Request, res: Response) {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
       return res.status(401).json({ message: 'Invalid credentials' });
+    
+    if (user.isBanned) {
+      return res.status(403).json({ message: 'Your account has been suspended. Contact support.' });
+    }
 
     const token = signToken({ userId: user._id, role: user.role });
 
